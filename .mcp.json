@@ -3,30 +3,22 @@
     "supabase": {
       "type": "http",
       "url": "https://mcp.supabase.com/mcp?project_ref=gqqnzwdrdcdvmdmlhlst"
-    }, "context7": {
+    },
+    "context7": {
       "type": "http",
       "url": "https://mcp.context7.com/mcp"
     },
     "sequential-thinking": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-sequential-thinking"
-      ]
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
     },
     "shadcn": {
-        "command": "npx",
-        "args": [
-          "shadcn@latest",
-          "mcp"
-        ]
-      },
+      "command": "npx",
+      "args": ["shadcn@latest", "mcp"]
+    },
     "shrimp-task-manager": {
       "command": "npx",
-      "args": [
-        "-y",
-        "mcp-shrimp-task-manager"
-      ],
+      "args": ["-y", "mcp-shrimp-task-manager"],
       "env": {
         "DATA_DIR": "C:/Users/simw4/OneDrive/바탕 화면/moe/1.study/9.Claude/my-app/shrimp_data",
         "TEMPLATES_USE": "en",

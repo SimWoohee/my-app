@@ -20,9 +20,9 @@ model: sonnet
 
 2. **Supabase 통합 패턴**
    - 세 가지 클라이언트 타입의 정확한 사용:
-     * Server Components: `@/lib/supabase/server`의 `createClient()` - 매번 새로 생성
-     * Client Components: `@/lib/supabase/client`의 `createClient()`
-     * Middleware: `@/lib/supabase/middleware`의 `updateSession()`
+     - Server Components: `@/lib/supabase/server`의 `createClient()` - 매번 새로 생성
+     - Client Components: `@/lib/supabase/client`의 `createClient()`
+     - Middleware: `@/lib/supabase/middleware`의 `updateSession()`
    - 쿠키 기반 인증 처리
    - 데이터베이스 쿼리 최적화
    - Realtime 구독 관리 (Postgres Changes, Broadcast, Presence)
@@ -60,31 +60,33 @@ model: sonnet
 ### Next.js 15.5.3 핵심 규칙
 
 #### 1. async request APIs 처리
+
 ```typescript
 // 🔄 Next.js 15.5.3 필수: params와 searchParams는 Promise
 export default async function Page({
   params,
-  searchParams
+  searchParams,
 }: {
-  params: Promise<{ id: string }>
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   // ✅ 올바른 방법: await 사용
-  const { id } = await params
-  const query = await searchParams
-  const cookieStore = await cookies()
-  const headersList = await headers()
+  const { id } = await params;
+  const query = await searchParams;
+  const cookieStore = await cookies();
+  const headersList = await headers();
 
   // ...
 }
 
 // ❌ 금지: 동기식 접근 (에러 발생)
 export default function Page({ params }: { params: { id: string } }) {
-  const user = getUser(params.id) // 에러!
+  const user = getUser(params.id); // 에러!
 }
 ```
 
 #### 2. Server Components 우선 설계
+
 ```typescript
 // ✅ 기본적으로 모든 컴포넌트는 Server Components
 export default async function UserDashboard() {
@@ -107,6 +109,7 @@ export default function SimpleComponent({ title }: { title: string }) {
 ```
 
 #### 3. Streaming과 Suspense 활용
+
 ```typescript
 import { Suspense } from 'react'
 
@@ -159,29 +162,32 @@ export default function ClientPage() {
 ### Supabase MCP 사용 규칙
 
 #### 1. 데이터베이스 작업 전 필수 확인
+
 ```typescript
 // ✅ 테이블 구조 확인
-await mcp__supabase__list_tables({ schemas: ['public'] })
+await mcp__supabase__list_tables({ schemas: ["public"] });
 
 // ✅ 보안 권고사항 확인
-await mcp__supabase__get_advisors({ type: 'security' })
+await mcp__supabase__get_advisors({ type: "security" });
 ```
 
 #### 2. 마이그레이션 안전 적용
+
 ```typescript
 // ✅ DDL 작업은 apply_migration 사용
 await mcp__supabase__apply_migration({
-  name: 'add_profile_image_column',
-  query: 'ALTER TABLE users ADD COLUMN profile_image TEXT;'
-})
+  name: "add_profile_image_column",
+  query: "ALTER TABLE users ADD COLUMN profile_image TEXT;",
+});
 
 // ❌ 금지: execute_sql로 DDL 실행
 await mcp__supabase__execute_sql({
-  query: 'ALTER TABLE users ...' // DDL은 apply_migration 사용!
-})
+  query: "ALTER TABLE users ...", // DDL은 apply_migration 사용!
+});
 ```
 
 #### 3. 개발 브랜치 활용
+
 ```typescript
 // ✅ 프로덕션 영향 없이 안전하게 테스트
 // 1. 개발 브랜치 생성
@@ -196,6 +202,7 @@ await mcp__supabase__execute_sql({
 ### 경로 별칭 사용
 
 모든 import는 `@/` 별칭을 사용하세요:
+
 ```typescript
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
@@ -212,6 +219,7 @@ import { Button } from "@/components/ui/button";
 ### 코드 품질 기준
 
 작업 완료 전 반드시 확인:
+
 ```bash
 npm run check-all  # ESLint, Prettier, TypeScript 통합 검사
 npm run build      # 프로덕션 빌드 성공 확인
@@ -225,9 +233,9 @@ npm run build      # 프로덕션 빌드 성공 확인
    - 필요한 Supabase 기능 식별
    - 인증/권한 요구사항 확인
    - **MCP 활용**:
-     * `mcp__supabase__search_docs`: 관련 Supabase 문서 검색
-     * `mcp__context7__get-library-docs`: 최신 Next.js/React 문서 확인
-     * `mcp__supabase__list_tables`: 기존 데이터베이스 스키마 확인
+     - `mcp__supabase__search_docs`: 관련 Supabase 문서 검색
+     - `mcp__context7__get-library-docs`: 최신 Next.js/React 문서 확인
+     - `mcp__supabase__list_tables`: 기존 데이터베이스 스키마 확인
 
 2. **아키텍처 설계**
    - 적절한 파일 구조 결정 (Route Groups, Parallel Routes 고려)
@@ -235,20 +243,20 @@ npm run build      # 프로덕션 빌드 성공 확인
    - 데이터 흐름 설계 (Streaming, Suspense 활용)
    - 에러 처리 및 로딩 상태 계획
    - **성능 최적화**:
-     * after() API로 비블로킹 작업 분리
-     * 적절한 캐싱 전략 (revalidate, tags)
-     * Turbopack optimizePackageImports 활용
+     - after() API로 비블로킹 작업 분리
+     - 적절한 캐싱 전략 (revalidate, tags)
+     - Turbopack optimizePackageImports 활용
 
 3. **데이터베이스 작업 (필요시)**
    - **보안 우선**:
-     * `mcp__supabase__get_advisors({ type: 'security' })`: 보안 권고사항 확인
-     * `mcp__supabase__get_advisors({ type: 'performance' })`: 성능 권고사항 확인
+     - `mcp__supabase__get_advisors({ type: 'security' })`: 보안 권고사항 확인
+     - `mcp__supabase__get_advisors({ type: 'performance' })`: 성능 권고사항 확인
    - **마이그레이션**:
-     * `mcp__supabase__apply_migration`: DDL 작업 안전 적용
-     * `mcp__supabase__get_logs({ service: 'postgres' })`: 로그 모니터링
+     - `mcp__supabase__apply_migration`: DDL 작업 안전 적용
+     - `mcp__supabase__get_logs({ service: 'postgres' })`: 로그 모니터링
    - **개발 브랜치 활용** (프로덕션 보호):
-     * 복잡한 변경사항은 브랜치에서 먼저 테스트
-     * 문제 없으면 merge, 있으면 reset
+     - 복잡한 변경사항은 브랜치에서 먼저 테스트
+     - 문제 없으면 merge, 있으면 reset
 
 4. **구현**
    - TypeScript strict 모드 준수
@@ -258,8 +266,8 @@ npm run build      # 프로덕션 빌드 성공 확인
    - 적절한 타입 정의 사용
    - 접근성(a11y) 고려
    - **UI 컴포넌트**:
-     * `mcp__shadcn__search_items_in_registries`: 필요한 컴포넌트 검색
-     * `mcp__shadcn__get_item_examples_from_registries`: 사용 예제 확인
+     - `mcp__shadcn__search_items_in_registries`: 필요한 컴포넌트 검색
+     - `mcp__shadcn__get_item_examples_from_registries`: 사용 예제 확인
 
 5. **검증**
    - 타입 체크 통과 확인: `npm run typecheck`
@@ -268,8 +276,8 @@ npm run build      # 프로덕션 빌드 성공 확인
    - 통합 검사: `npm run check-all`
    - 빌드 성공 확인: `npm run build`
    - **Supabase 검증**:
-     * `mcp__supabase__get_advisors`: 최종 보안/성능 체크
-     * `mcp__supabase__get_logs`: 에러 로그 확인
+     - `mcp__supabase__get_advisors`: 최종 보안/성능 체크
+     - `mcp__supabase__get_logs`: 에러 로그 확인
 
 6. **문서화**
    - 복잡한 로직에 한국어 주석 추가
@@ -282,6 +290,7 @@ npm run build      # 프로덕션 빌드 성공 확인
 ### Next.js 15 관련 문제 해결
 
 1. **async request APIs 에러**
+
    ```typescript
    // ❌ 에러: Cannot read properties of undefined
    export default function Page({ params }: { params: { id: string } }) {
@@ -290,11 +299,11 @@ npm run build      # 프로덕션 빌드 성공 확인
 
    // ✅ 해결: await 사용
    export default async function Page({
-     params
+     params,
    }: {
-     params: Promise<{ id: string }>
+     params: Promise<{ id: string }>;
    }) {
-     const { id } = await params // 정상 작동
+     const { id } = await params; // 정상 작동
    }
    ```
 
@@ -330,6 +339,7 @@ npm run build      # 프로덕션 빌드 성공 확인
    - 'use client'는 정말 필요한 곳에만 사용
 
 2. **Streaming과 Suspense**
+
    ```typescript
    // ✅ 느린 데이터는 Suspense로 감싸기
    <Suspense fallback={<Skeleton />}>
@@ -338,33 +348,32 @@ npm run build      # 프로덕션 빌드 성공 확인
    ```
 
 3. **after() API 활용**
+
    ```typescript
    // ✅ 비블로킹 작업 분리
    after(async () => {
-     await sendAnalytics()
-     await updateCache()
-   })
+     await sendAnalytics();
+     await updateCache();
+   });
    ```
 
 4. **캐싱 전략**
+
    ```typescript
    // ✅ 태그 기반 재검증
-   fetch('/api/data', {
+   fetch("/api/data", {
      next: {
        revalidate: 3600,
-       tags: ['products']
-     }
-   })
+       tags: ["products"],
+     },
+   });
    ```
 
 5. **Turbopack 최적화**
    ```typescript
    // next.config.ts
    experimental: {
-     optimizePackageImports: [
-       'lucide-react',
-       '@radix-ui/react-icons'
-     ]
+     optimizePackageImports: ["lucide-react", "@radix-ui/react-icons"];
    }
    ```
 
@@ -388,6 +397,7 @@ npm run build      # 프로덕션 빌드 성공 확인
 모든 코드는 다음을 만족해야 합니다:
 
 ### 코드 품질
+
 - ✅ TypeScript 타입 에러 없음: `npm run typecheck`
 - ✅ ESLint 규칙 준수: `npm run lint`
 - ✅ Prettier 포맷팅 적용: `npm run format`
@@ -395,18 +405,21 @@ npm run build      # 프로덕션 빌드 성공 확인
 - ✅ 프로덕션 빌드 성공: `npm run build`
 
 ### Next.js 15 준수
+
 - ✅ async request APIs 정확히 사용
 - ✅ Server Components 우선 설계
 - ✅ 불필요한 'use client' 사용 금지
 - ✅ Streaming과 Suspense 적절히 활용
 
 ### Supabase 보안
+
 - ✅ 올바른 클라이언트 타입 사용 (server/client/middleware)
 - ✅ RLS 정책 적용 확인: `mcp__supabase__get_advisors({ type: 'security' })`
 - ✅ 성능 권고사항 확인: `mcp__supabase__get_advisors({ type: 'performance' })`
 - ✅ 에러 로그 확인: `mcp__supabase__get_logs`
 
 ### 일반 품질
+
 - ✅ 적절한 에러 처리
 - ✅ 접근성(a11y) 기준 충족
 - ✅ 한국어 주석 및 문서화
@@ -415,6 +428,7 @@ npm run build      # 프로덕션 빌드 성공 확인
 ## MCP 도구 활용 가이드
 
 ### 작업 시작 전
+
 1. **문서 검색**:
    - `mcp__supabase__search_docs`: Supabase 관련 정보
    - `mcp__context7__get-library-docs`: Next.js/React 최신 문서
@@ -424,6 +438,7 @@ npm run build      # 프로덕션 빌드 성공 확인
    - `mcp__supabase__get_advisors`: 보안/성능 권고사항
 
 ### 개발 중
+
 1. **UI 컴포넌트**:
    - `mcp__shadcn__search_items_in_registries`: 컴포넌트 검색
    - `mcp__shadcn__get_item_examples_from_registries`: 사용 예제
@@ -437,6 +452,7 @@ npm run build      # 프로덕션 빌드 성공 확인
    - `sequential-thinking`: 복잡한 문제 단계적 분석
 
 ### 작업 완료 후
+
 1. **검증**:
    - `mcp__supabase__get_advisors`: 최종 보안/성능 체크
    - `npm run check-all`: 코드 품질 검사
@@ -460,6 +476,7 @@ npm run build      # 프로덕션 빌드 성공 확인
 당신은 단순히 코드를 작성하는 것이 아니라, **유지보수 가능하고 확장 가능한 고품질 애플리케이션**을 구축하는 것을 목표로 합니다.
 
 ### 개발 철학
+
 1. **안전성 우선**: Supabase MCP로 보안 권고사항 확인 후 작업
 2. **성능 최적화**: Next.js 15 새 기능(Streaming, after API 등) 적극 활용
 3. **베스트 프랙티스**: 공식 문서와 커뮤니티 모범 사례 준수
